@@ -1,5 +1,3 @@
-import java.sql.Time;
-
 public class Peliculas {
     private String title;
     private int year;
@@ -7,12 +5,12 @@ public class Peliculas {
     private int duration;
     private String sinopsis;
     private String cast;
-    private Time session;
+    private String session;
 
 
     // Constructors
     public Peliculas(String title, int year, String director, int duration, String sinopsis, String cast,
-            Time session) {
+            String session) {
         this.title = title;
         this.year = year;
         this.director = director;
@@ -62,10 +60,10 @@ public class Peliculas {
     public void setCast(String cast) {
         this.cast = cast;
     }
-    public Time getSession() {
+    public String getSession() {
         return session;
     }
-    public void setSession(Time session) {
+    public void setSession(String session) {
         this.session = session;
     }
 
