@@ -63,8 +63,20 @@ public class Peliculas {
     public String getSession() {
         return session;
     }
+
     public void setSession(String session) {
         this.session = session;
+    }
+    
+    // HE AÑADIDO ESTO, AHORA TOCA USAR EL WRITTER PARA ESCRIBIR LOS ATRIBUTOS DE LOS OBJETOS CON EL ToSTRING
+    public String toString(){
+        return "-----" + title + "-----\n"
+                + "Año: " + year + "\n"
+                + "Director: " + director + "\n"
+                + "Duración: " + duration + " minutos\n"
+                + "Sinopsis: " + sinopsis + "\n"
+                + "Reparto: " + cast + "\n"
+                + "Sesión: " + session + " horas\n";
     }
 
     

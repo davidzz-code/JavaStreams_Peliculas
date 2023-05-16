@@ -1,76 +1,78 @@
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.UIDefaults.ProxyLazyValue;
 
 public class LecturaEscrituraStreams {
 
     public static String pedirRuta() {
         Scanner scan = new Scanner(System.in);
         String ruta;
-        
-        System.out.print("Escribe la ruta donde tienes guardado el fichero: ");
+
         ruta = scan.nextLine();
-        scan.close();
         return ruta;
     }
 
 
     public static void leerEscribirCarCar() {
-        // String ruta = pedirRuta();
-        Peliculas pelicula = new Peliculas();
+        // LEER CARACTER A CARACTER
+        ArrayList<Peliculas> listaPeliculas = new ArrayList<>();
 
+        System.out.print("Ruta del fichero para LEER el texto: ");
+        String ruta = pedirRuta();
         
         try {
-            FileReader fichero = new FileReader("./ficheroCartelera.txt");
             int caracter = 0;
             String texto = "";
-            // char letra = ' ';
+
+            FileReader ficheroLectura = new FileReader(ruta);
 
             while (caracter != -1) {
-                caracter = fichero.read();
+                caracter = ficheroLectura.read();
                 char letra = (char) caracter;
-
                 texto += letra;
             }
-            
-            String[] listaObjetos = texto.split("\\{"); // Aquí el código rompe. Revisar si está dividiendo el string correctamnte
+
+            String[] listaObjetos = texto.split("\\{");
+
             for (int i = 0; i < listaObjetos.length; i++) {
+                Peliculas pelicula = new Peliculas();
                 String objetos = listaObjetos[i];
                 String[] listaAtributos = objetos.split("#");
 
                 pelicula.setTitle(listaAtributos[0]);
                 pelicula.setYear(Integer.parseInt(listaAtributos[1]));
-                System.out.println("Titulo: " + pelicula.getTitle());
-                System.out.println("Año: " + pelicula.getYear());
+                pelicula.setDirector(listaAtributos[2]);
+                pelicula.setDuration(Integer.parseInt(listaAtributos[3]));
+                pelicula.setSinopsis(listaAtributos[4]);
+                pelicula.setCast(listaAtributos[5]);
+                pelicula.setSession(listaAtributos[6]);
+
+                listaPeliculas.add(pelicula);
             }
-
-
-            fichero.close();
+            ficheroLectura.close();
         } catch (IOException e) {
             System.out.println("No se ha encontrado el archivo");
         }
+
+
+        // ESCRIBIR CARACTER A CARACTER
+        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+        ruta = pedirRuta();
+
+        try {
+            FileWriter ficheroEscritura = new FileWriter(ruta);
+            for (Peliculas peli : listaPeliculas) {
+                ficheroEscritura.write(peli.toString());
+            }
+            ficheroEscritura.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
-
-
-
-
-
-            // while (caracter != -1 && letra != '#') {
-            //     caracter = fichero.read();
-            //     letra = (char) caracter;
-                
-            //     texto += letra;
-            // }
-            
-            // for (int i = 0; i < 7; i++) {
-            //     switch (i) {
-            //         case 0:
-            //             pelicula.setTitle(texto);
-            //         case 1:
-            //             pelicula.setYear(texto);
-            //     }
-                
-            // }
