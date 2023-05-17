@@ -70,7 +70,7 @@ public class Peliculas {
     
     // HE AÑADIDO ESTO, AHORA TOCA USAR EL WRITTER PARA ESCRIBIR LOS ATRIBUTOS DE LOS OBJETOS CON EL ToSTRING
     public String toString(){
-        return "-----" + title + "-----\n"
+        return "\n-----" + title + "-----\n"
                 + "Año: " + year + "\n"
                 + "Director: " + director + "\n"
                 + "Duración: " + duration + " minutos\n"
