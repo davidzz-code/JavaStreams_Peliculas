@@ -20,7 +20,7 @@ public class Main {
                 LecturaEscrituraStreams.leerEscribirCarCar();
                 break;
             case 2:
-                System.out.println("En proceso");
+                LecturaEscrituraStreams.leerEscribirByteByte();
                 break;
             case 3:
                 LecturaEscrituraStreams.leerEscribirBuffer();
