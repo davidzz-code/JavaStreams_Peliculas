@@ -18,20 +18,27 @@ public class LecturaEscrituraStreams {
         return ruta;
     }
 
-    public static String formatoEscritura(String[] listaAtributos) {
-        String formato = "-----" + listaAtributos[0] + "-----\n";
-        formato += "Año: " + listaAtributos[1] + "\n";
-        formato += "Director: " + listaAtributos[2] + "\n";
-        formato += "Duración: " + listaAtributos[3] + " minutos\n";
-        formato += "Sinopsis: " + listaAtributos[4] + "\n";
-        formato += "Reparto: " + listaAtributos[5] + "\n";
-        formato += "Sesión: " + listaAtributos[6] + " horas\n\n";
+    public static String formatoEscritura(String texto) {
+        String formato = "Cartelera:\n\n";
+        String[] listaObjetos = texto.split("\\{");
 
+        for (int i = 0; i < listaObjetos.length; i++) {
+            String objetos = listaObjetos[i];
+            String[] listaAtributos = objetos.split("#");
+
+            formato += "-----" + listaAtributos[0] + "-----\n";
+            formato += "Año: " + listaAtributos[1] + "\n";
+            formato += "Director: " + listaAtributos[2] + "\n";
+            formato += "Duración: " + listaAtributos[3] + " minutos\n";
+            formato += "Sinopsis: " + listaAtributos[4] + "\n";
+            formato += "Reparto: " + listaAtributos[5] + "\n";
+            formato += "Sesión: " + listaAtributos[6] + " horas\n\n";
+        }
         return formato;
     }
     
     public static void leerEscribirCarCar() {
-        // LEER CARACTER A CARACTER
+        // Leer carácter a carácter
         System.out.print("Ruta del fichero para LEER el texto: ");
         String rutaLeer = pedirRuta();
         System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
@@ -50,14 +57,9 @@ public class LecturaEscrituraStreams {
                 texto += letra;
             }
 
-            String[] listaObjetos = texto.split("\\{");
+            // Escribir carácter a carácter
+            ficheroEscritura.write(formatoEscritura(texto));
 
-            for (int i = 0; i < listaObjetos.length; i++) {
-                String objetos = listaObjetos[i];
-                String[] listaAtributos = objetos.split("#");
-                // ESCRIBIR CARACTER A CARACTER
-                ficheroEscritura.write(formatoEscritura(listaAtributos));
-            }
             ficheroLectura.close();
             ficheroEscritura.close();
         } catch (IOException e) {
@@ -66,7 +68,7 @@ public class LecturaEscrituraStreams {
     }
 
     public static void leerEscribirBuffer() {
-        // LEER BUFFER
+        // Leer bufer
         System.out.print("Ruta del fichero para LEER el texto: ");
         String rutaLeer = pedirRuta();
         System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
@@ -84,16 +86,9 @@ public class LecturaEscrituraStreams {
                     linea = bufferLeer.readLine();
 
                     if (linea != null) {
-
-                        String[] listaObjetos = linea.split("\\{");
-
-                        for (int i = 0; i < listaObjetos.length; i++) {
-                            String objetos = listaObjetos[i];
-                            String[] listaAtributos = objetos.split("#");
-                            // ESCRIBIR CARACTER A CARACTER
-                            bufferEscribir.write(formatoEscritura(listaAtributos));
-                            bufferEscribir.flush();
-                        }
+                        // Escribir buffer
+                        bufferEscribir.write(formatoEscritura(linea));
+                        bufferEscribir.flush();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -107,15 +102,12 @@ public class LecturaEscrituraStreams {
     }
 
     public static void leerEscribirByteByte() {
-        // LEER BYTE A BYTE
-        int[] datos_entrada = new int[735];
-
+        // Leer byte a byte
         System.out.print("Ruta del fichero para LEER el texto: ");
         String rutaLeer = pedirRuta();
         System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
         String rutaEscribir = pedirRuta();
-        
-        int contador = 0;
+
         String textoByte = "";
 
         try {
@@ -133,16 +125,12 @@ public class LecturaEscrituraStreams {
 
                 char caracterByte = (char) byte_entrada;
                 textoByte += caracterByte;
-                contador++;
             }
             
-            String[] listaObjetos = textoByte.split("\\{");
+            // Escribir Byte a byte
+            String textoFinal = formatoEscritura(textoByte);
+            ficheroEscritura.write(textoFinal.getBytes());
 
-            for (int i = 0; i < listaObjetos.length; i++) {
-                String objetos = listaObjetos[i];
-                String[] listaAtributos = objetos.split("#");
-                ficheroEscritura.write(formatoEscritura(listaAtributos).getBytes());
-            }
             ficheroLectura.close();
             ficheroEscritura.close();
         } catch (IOException e) {
@@ -150,6 +138,8 @@ public class LecturaEscrituraStreams {
         }
     }
 
+
+    
     public static void leerEscribirObjCarCar() {
         // LEER CARACTER A CARACTER
         ArrayList<Peliculas> listaPeliculas = new ArrayList<>();
