@@ -1,20 +1,25 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 public class LecturaEscrituraStreams {
 
-    public static String pedirRuta() {
+    public static String pedirRuta() throws RutaInvalida {
         Scanner scan = new Scanner(System.in);
         String ruta;
 
         ruta = scan.nextLine();
+        if ("".equals(ruta)) {
+            throw new RutaInvalida("Ruta inválida");
+        }
         return ruta;
     }
 
@@ -36,15 +41,15 @@ public class LecturaEscrituraStreams {
         }
         return formato;
     }
-    
-    public static void leerEscribirCarCar() {
-        // Leer carácter a carácter
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String rutaLeer = pedirRuta();
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        String rutaEscribir = pedirRuta();
 
+    public static void leerEscribirCarCar() throws RutaInvalida {
+        // Leer carácter a carácter
         try {
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
+
             int caracter = 0;
             String texto = "";
 
@@ -67,18 +72,16 @@ public class LecturaEscrituraStreams {
         }
     }
 
-    public static void leerEscribirBuffer() {
+    public static void leerEscribirBuffer() throws RutaInvalida {
         // Leer bufer
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String rutaLeer = pedirRuta();
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        String rutaEscribir = pedirRuta();
         try {
-            FileReader ficheroLectura = new FileReader(rutaLeer);
-            BufferedReader bufferLeer = new BufferedReader(ficheroLectura);
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
 
-            FileWriter ficheroEscritura = new FileWriter(rutaEscribir);
-            BufferedWriter bufferEscribir = new BufferedWriter(ficheroEscritura);
+            BufferedReader bufferLeer = new BufferedReader(new FileReader(rutaLeer));
+            BufferedWriter bufferEscribir = new BufferedWriter(new FileWriter(rutaEscribir));
 
             String linea = "";
             while (linea != null) {
@@ -94,28 +97,28 @@ public class LecturaEscrituraStreams {
                     e.printStackTrace();
                 }
             }
-            ficheroLectura.close();
-            ficheroEscritura.close();
+            bufferLeer.close();
+            bufferEscribir.close();
         } catch (IOException e) {
             System.out.println("No se ha encontrado el archivo");
         }
     }
 
-    public static void leerEscribirByteByte() {
+    public static void leerEscribirByteByte() throws RutaInvalida {
         // Leer byte a byte
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String rutaLeer = pedirRuta();
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        String rutaEscribir = pedirRuta();
-
-        String textoByte = "";
-
         try {
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
+
+            String textoByte = "";
+
             FileInputStream ficheroLectura = new FileInputStream(rutaLeer);
             FileOutputStream ficheroEscritura = new FileOutputStream(rutaEscribir);
 
             boolean final_ar = false;
-            
+
             while (!final_ar) {
                 int byte_entrada = ficheroLectura.read();
 
@@ -126,7 +129,7 @@ public class LecturaEscrituraStreams {
                 char caracterByte = (char) byte_entrada;
                 textoByte += caracterByte;
             }
-            
+
             // Escribir Byte a byte
             String textoFinal = formatoEscritura(textoByte);
             ficheroEscritura.write(textoFinal.getBytes());
@@ -138,196 +141,138 @@ public class LecturaEscrituraStreams {
         }
     }
 
-
-    
-    public static void leerEscribirObjCarCar() {
-        // LEER CARACTER A CARACTER
-        ArrayList<Peliculas> listaPeliculas = new ArrayList<>();
-
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String ruta = pedirRuta();
+    public static void leerLineaEscribirObj() throws RutaInvalida {
 
         try {
-            int caracter = 0;
-            String texto = "";
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
 
-            FileReader ficheroLectura = new FileReader(ruta);
+            BufferedReader lectorBuffer = new BufferedReader(new FileReader(rutaLeer));
+            ObjectOutputStream objectSalida = new ObjectOutputStream(new FileOutputStream(rutaEscribir));
 
-            while (caracter != -1) {
-                caracter = ficheroLectura.read();
-                char letra = (char) caracter;
-                texto += letra;
-            }
-
-            String[] listaObjetos = texto.split("\\{");
-
-            for (int i = 0; i < listaObjetos.length; i++) {
-                Peliculas pelicula = new Peliculas();
-                String objetos = listaObjetos[i];
-                String[] listaAtributos = objetos.split("#");
-
-                pelicula.setTitle(listaAtributos[0]);
-                pelicula.setYear(Integer.parseInt(listaAtributos[1]));
-                pelicula.setDirector(listaAtributos[2]);
-                pelicula.setDuration(Integer.parseInt(listaAtributos[3]));
-                pelicula.setSinopsis(listaAtributos[4]);
-                pelicula.setCast(listaAtributos[5]);
-                pelicula.setSession(listaAtributos[6]);
-
-                listaPeliculas.add(pelicula);
-            }
-            ficheroLectura.close();
-        } catch (IOException e) {
-            System.out.println("No se ha encontrado el archivo");
-        }
-
-        // ESCRIBIR CARACTER A CARACTER
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        ruta = pedirRuta();
-
-        try {
-            FileWriter ficheroEscritura = new FileWriter(ruta);
-            for (Peliculas peli : listaPeliculas) {
-                ficheroEscritura.write(peli.toString());
-            }
-
-            System.out.println("Lectura y escritura por CARACTERES realizada correctamente!");
-            ficheroEscritura.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void leerEscribirObjBuffer() {
-        // LEER BUFFER
-        ArrayList<Peliculas> listaPeliculas = new ArrayList<>();
-
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String ruta = pedirRuta();
-        try {
-            FileReader ficheroLectura = new FileReader(ruta);
-            BufferedReader bufferPeliculas = new BufferedReader(ficheroLectura);
-
-            String linea = "";
-            while (linea != null) {
-                try {
-                    linea = bufferPeliculas.readLine();
-
-                    if (linea != null) {
-
-                        String[] listaObjetos = linea.split("\\{");
-
-                        for (int i = 0; i < listaObjetos.length; i++) {
-                            Peliculas pelicula = new Peliculas();
-                            String objetos = listaObjetos[i];
-                            String[] listaAtributos = objetos.split("#");
-
-                            pelicula.setTitle(listaAtributos[0]);
-                            pelicula.setYear(Integer.parseInt(listaAtributos[1]));
-                            pelicula.setDirector(listaAtributos[2]);
-                            pelicula.setDuration(Integer.parseInt(listaAtributos[3]));
-                            pelicula.setSinopsis(listaAtributos[4]);
-                            pelicula.setCast(listaAtributos[5]);
-                            pelicula.setSession(listaAtributos[6]);
-
-                            listaPeliculas.add(pelicula);
+            boolean eof = false;
+            String lineaLeida;
+            String[] peliculas;
+            String[] texto;
+            int i = 0; //indice de campos
+            Pelicula p = new Pelicula(); //inicializa una película
+            while (!eof) {
+                lineaLeida = lectorBuffer.readLine(); //lee una línea
+                if (lineaLeida != null) {
+                    peliculas = lineaLeida.split("\\{"); //divide la línea por '{' (películas)
+                    for (int j = 0; j < peliculas.length; j++) {
+                        texto = peliculas[j].split("#"); //divide la línea por '#' (campos)
+                        for (int k = 0; k < texto.length; k++) {
+                            switch (i) { // añade el texto en el campo que toque (atributos del objeto)
+                                case 0:
+                                    p.setTitle(p.getTitle() + texto[k] + " ");
+                                    break;
+                                case 1:
+                                    p.setYear(p.getYear() + texto[k] + " ");
+                                    break;
+                                case 2:
+                                    p.setDirector(p.getDirector() + texto[k] + " ");
+                                    break;
+                                case 3:
+                                    p.setDuration(p.getDuration() + texto[k] + " ");
+                                    break;
+                                case 4:
+                                    p.setSinopsis(p.getSinopsis() + texto[k] + " ");
+                                    break;
+                                case 5:
+                                    p.setCast(p.getCast() + texto[k] + " ");
+                                    break;
+                                case 6:
+                                    p.setSession(p.getSession() + texto[k] + " ");
+                                    break;
+                            }
+                            //si hay más de un elemento en el array "texto" y no es el último elemento del array (pasar al siguiente campo)
+                            if (k < texto.length - 1) {
+                                i++;
+                            }
+                        }
+                        //si hay más de un elemento en el array "peliculas" y no es el último elemento del array (pasamos a la siguiente película)
+                        if (j < peliculas.length - 1) {
+                            objectSalida.writeObject(p);
+                            //p.mostrarPelicula();
+                            p = new Pelicula();
+                            i = 0;
                         }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } else {
+                    eof = true;
                 }
             }
-            ficheroLectura.close();
-        } catch (IOException e) {
-            System.out.println("No se ha encontrado el archivo");
-        }
-
-        // ESCRIBIR Buffer
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        ruta = pedirRuta();
-
-        try {
-            FileWriter ficheroEscritura = new FileWriter(ruta);
-            BufferedWriter bufferPeliculas = new BufferedWriter(ficheroEscritura);
-
-            for (Peliculas peli : listaPeliculas) {
-                bufferPeliculas.write(peli.toString());
-            }
-            bufferPeliculas.flush();
-            System.out.println("Lectura y escritura por BUFFERS realizada correctamente!");
-
-            ficheroEscritura.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            objectSalida.writeObject(p);
+            //p.mostrarPelicula();
+        } catch (EOFException ex) {
+            System.out.println("FIN DE FICHERO");
+        } catch (IOException ex) {
+            System.out.println("Error de lectura/escritura");
         }
     }
 
-    public static void leerEscribirObjByteByte() {
-        // LEER BYTE A BYTE
-        ArrayList<Peliculas> listaPeliculas = new ArrayList<>();
-
-        int[] datos_entrada = new int[735];
-
-        System.out.print("Ruta del fichero para LEER el texto: ");
-        String ruta = pedirRuta();
-        int contador = 0;
-        String textoByte = "";
-
+    public static void leerObjEscribirObj() throws RutaInvalida {
         try {
-            FileInputStream ficheroLectura = new FileInputStream(ruta);
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
 
-            boolean final_ar = false;
+            ObjectInputStream objectEntrada = new ObjectInputStream(new FileInputStream(rutaLeer));
+            ObjectOutputStream objectSalida = new ObjectOutputStream(new FileOutputStream(rutaEscribir));
 
-            while (!final_ar) {
-                int byte_entrada = ficheroLectura.read();
-
-                if (byte_entrada == -1) {
-                    final_ar = true;
-                }
-
-                char caracterByte = (char) byte_entrada;
-                textoByte += caracterByte;
-                contador++;
+            boolean eof = false;
+            while (!eof) {
+                objectSalida.writeObject(new Pelicula((Pelicula) objectEntrada.readObject()));
             }
-
-            String[] listaObjetos = textoByte.split("\\{");
-
-            for (int i = 0; i < listaObjetos.length; i++) {
-                Peliculas pelicula = new Peliculas();
-                String objetos = listaObjetos[i];
-                String[] listaAtributos = objetos.split("#");
-
-                pelicula.setTitle(listaAtributos[0]);
-                pelicula.setYear(Integer.parseInt(listaAtributos[1]));
-                pelicula.setDirector(listaAtributos[2]);
-                pelicula.setDuration(Integer.parseInt(listaAtributos[3]));
-                pelicula.setSinopsis(listaAtributos[4]);
-                pelicula.setCast(listaAtributos[5]);
-                pelicula.setSession(listaAtributos[6]);
-
-                listaPeliculas.add(pelicula);
-            }
-
-            ficheroLectura.close();
-        } catch (IOException e) {
-            System.out.println("No se encuentra el archivo");
-        }
-
-        // ESCRIBIR Byte a Byte
-        System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
-        ruta = pedirRuta();
-
-        try {
-            FileOutputStream ficheroEscritura = new FileOutputStream(ruta);
-
-            for (int i = 0; i < datos_entrada.length; i++) {
-                ficheroEscritura.write(datos_entrada[i]);
-            }
-        } catch (IOException e) {
-
+        } catch (EOFException e) {
+            System.out.println("fin de fichero");
+        } catch (IOException ex) {
+            System.out.println("Error de lectura/escritura");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Error de clase");
         }
     }
 
+    public static void leerObjEscribirCons() throws RutaInvalida {
+        try {
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+            System.out.print("Ruta de un nuevo fichero para ESCRIBIR el texto: ");
+            String rutaEscribir = pedirRuta();
+
+            ObjectInputStream objectEntrada = new ObjectInputStream(new FileInputStream(rutaLeer));
+
+            boolean eof = false;
+            Pelicula p = new Pelicula();
+            while (!eof) {
+                p = (Pelicula) objectEntrada.readObject();
+                p.mostrarPelicula();
+            }
+        } catch (EOFException e) {
+            System.out.println("fin de fichero");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Error de clase");
+        } catch (IOException ex) {
+            System.out.println("Error de lectura");
+        }
+    }
+
+    public static void leerConsEscribirObj() throws RutaInvalida {
+        try {
+            System.out.print("Ruta del fichero para LEER el texto: ");
+            String rutaLeer = pedirRuta();
+
+            ObjectOutputStream objectSalida = new ObjectOutputStream(new FileOutputStream(rutaLeer));
+
+            Pelicula p = new Pelicula(); //crea una nueva película  
+            p.pedirPelicula(); //llenamos sus atributos pidiendolos por pantalla
+            objectSalida.writeObject(p); //lo guardamos en un fichero
+        } catch (IOException ex) {
+            System.out.println("Error de escritura");
+        }
+    }
 }
